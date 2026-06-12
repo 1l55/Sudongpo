@@ -1,0 +1,436 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ===== 全局基础样式 ===== */
+* {
+  box-sizing: border-box;
+}
+
+html, body, #root {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+body {
+  font-family: 'Noto Serif SC', 'Source Han Serif SC', serif;
+  background-color: #f5f0e1;
+  color: #2c2c2c;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ===== 宣纸纹理背景 ===== */
+.paper-texture {
+  background-color: #f5f0e1;
+  background-image:
+    radial-gradient(ellipse at 20% 50%, rgba(200, 180, 140, 0.15) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 20%, rgba(200, 180, 140, 0.1) 0%, transparent 40%),
+    radial-gradient(ellipse at 50% 80%, rgba(180, 160, 120, 0.08) 0%, transparent 50%);
+  position: relative;
+}
+
+.paper-texture::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image:
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(139, 119, 80, 0.03) 2px,
+      rgba(139, 119, 80, 0.03) 4px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      transparent,
+      transparent 3px,
+      rgba(139, 119, 80, 0.02) 3px,
+      rgba(139, 119, 80, 0.02) 6px
+    );
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ===== 水墨装饰元素 ===== */
+.ink-blob {
+  position: absolute;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(44, 44, 44, 0.08) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+/* ===== 叙事文本区域 ===== */
+.narrative-scroll {
+  max-height: 55vh;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(44, 44, 44, 0.2) transparent;
+}
+
+.narrative-scroll::-webkit-scrollbar {
+  width: 4px;
+}
+
+.narrative-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.narrative-scroll::-webkit-scrollbar-thumb {
+  background-color: rgba(44, 44, 44, 0.2);
+  border-radius: 2px;
+}
+
+/* ===== 属性条样式 ===== */
+.stat-bar-track {
+  height: 8px;
+  background: rgba(44, 44, 44, 0.1);
+  border-radius: 4px;
+  overflow: hidden;
+  position: relative;
+}
+
+.stat-bar-fill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  position: relative;
+}
+
+.stat-bar-fill::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.2) 50%,
+    transparent 100%
+  );
+  animation: shimmer 2s ease-in-out infinite;
+}
+
+@keyframes shimmer {
+  0%, 100% { transform: translateX(-100%); }
+  50% { transform: translateX(100%); }
+}
+
+/* ===== 选择按钮 ===== */
+.choice-btn {
+  position: relative;
+  background: rgba(245, 240, 225, 0.9);
+  border: 1px solid rgba(44, 44, 44, 0.15);
+  border-radius: 4px;
+  padding: 14px 24px;
+  font-family: 'Noto Serif SC', serif;
+  font-size: 1rem;
+  color: #2c2c2c;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  overflow: hidden;
+  text-align: left;
+  line-height: 1.6;
+}
+
+.choice-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(178, 34, 34, 0.08),
+    transparent
+  );
+  transition: left 0.5s ease;
+}
+
+.choice-btn:hover {
+  border-color: #b22222;
+  background: rgba(178, 34, 34, 0.05);
+  transform: translateX(4px);
+  box-shadow: 0 2px 8px rgba(178, 34, 34, 0.1);
+}
+
+.choice-btn:hover::before {
+  left: 100%;
+}
+
+.choice-btn:active {
+  transform: translateX(2px) scale(0.98);
+}
+
+/* ===== 诗词显示 ===== */
+.poem-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(44, 44, 44, 0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  animation: fadeIn 0.5s ease-out;
+}
+
+.poem-card {
+  background: #f5f0e1;
+  border: 2px solid rgba(178, 34, 34, 0.3);
+  border-radius: 8px;
+  padding: 40px;
+  max-width: 500px;
+  width: 90%;
+  position: relative;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  animation: inkSpread 1s ease-out;
+}
+
+.poem-card::before {
+  content: '';
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  right: 8px;
+  bottom: 8px;
+  border: 1px solid rgba(178, 34, 34, 0.15);
+  border-radius: 4px;
+  pointer-events: none;
+}
+
+.poem-vertical {
+  writing-mode: vertical-rl;
+  text-orientation: upright;
+  line-height: 2.2;
+  letter-spacing: 0.15em;
+  max-height: 50vh;
+  overflow-x: auto;
+}
+
+/* ===== 水墨晕染过渡 ===== */
+.ink-transition-enter {
+  opacity: 0;
+  filter: blur(8px);
+  transform: scale(1.05);
+}
+
+.ink-transition-enter-active {
+  opacity: 1;
+  filter: blur(0);
+  transform: scale(1);
+  transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.ink-transition-exit {
+  opacity: 1;
+  filter: blur(0);
+  transform: scale(1);
+}
+
+.ink-transition-exit-active {
+  opacity: 0;
+  filter: blur(8px);
+  transform: scale(0.95);
+  transition: all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+/* ===== 属性变化提示 ===== */
+.stat-delta {
+  position: absolute;
+  font-size: 0.85rem;
+  font-weight: 700;
+  animation: floatUp 1.2s ease-out forwards;
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+.stat-delta.positive {
+  color: #b22222;
+}
+
+.stat-delta.negative {
+  color: #5a7a5a;
+}
+
+@keyframes floatUp {
+  0% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  80% {
+    opacity: 0.6;
+    transform: translateY(-25px);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-35px);
+  }
+}
+
+/* ===== 标题画面 ===== */
+.title-ink-bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  overflow: hidden;
+}
+
+.title-ink-bg::before {
+  content: '';
+  position: absolute;
+  top: 20%;
+  left: 30%;
+  width: 300px;
+  height: 300px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(44, 44, 44, 0.06) 0%, transparent 70%);
+  animation: floatBlob 8s ease-in-out infinite;
+}
+
+.title-ink-bg::after {
+  content: '';
+  position: absolute;
+  bottom: 20%;
+  right: 20%;
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(44, 44, 44, 0.04) 0%, transparent 70%);
+  animation: floatBlob 6s ease-in-out infinite reverse;
+}
+
+@keyframes floatBlob {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(20px, -15px) scale(1.05); }
+  66% { transform: translate(-10px, 10px) scale(0.95); }
+}
+
+/* ===== 印章样式 ===== */
+.seal {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border: 2px solid #b22222;
+  border-radius: 4px;
+  color: #b22222;
+  font-size: 0.75rem;
+  font-weight: 700;
+  line-height: 1.2;
+  transform: rotate(-5deg);
+  opacity: 0.8;
+  letter-spacing: 0.05em;
+}
+
+.seal-large {
+  width: 72px;
+  height: 72px;
+  font-size: 1rem;
+  border-width: 3px;
+}
+
+/* ===== 水墨分割线 ===== */
+.ink-divider {
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(44, 44, 44, 0.3) 20%,
+    rgba(44, 44, 44, 0.3) 80%,
+    transparent 100%
+  );
+  margin: 16px 0;
+}
+
+/* ===== 结局画面 ===== */
+.ending-title {
+  font-size: 2.5rem;
+  font-weight: 900;
+  color: #b22222;
+  text-shadow: 0 2px 10px rgba(178, 34, 34, 0.2);
+  animation: glow 3s ease-in-out infinite;
+}
+
+@keyframes glow {
+  0%, 100% { text-shadow: 0 0 5px rgba(178, 34, 34, 0.2); }
+  50% { text-shadow: 0 0 20px rgba(178, 34, 34, 0.4), 0 0 40px rgba(178, 34, 34, 0.1); }
+}
+
+/* ===== 竖排诗词收集册 ===== */
+.poem-collection-item {
+  border-left: 1px solid rgba(178, 34, 34, 0.2);
+  padding-left: 16px;
+  margin-left: 8px;
+  transition: all 0.3s ease;
+}
+
+.poem-collection-item:hover {
+  border-left-color: #b22222;
+  background: rgba(178, 34, 34, 0.03);
+}
+
+/* ===== 响应式调整 ===== */
+@media (max-width: 768px) {
+  .narrative-scroll {
+    max-height: 45vh;
+  }
+  
+  .poem-card {
+    padding: 24px;
+  }
+  
+  .ending-title {
+    font-size: 1.8rem;
+  }
+}
+
+/* ===== 打字机光标 ===== */
+.typing-cursor {
+  display: inline-block;
+  width: 2px;
+  height: 1.2em;
+  background-color: #2c2c2c;
+  margin-left: 2px;
+  animation: blink 1s step-end infinite;
+  vertical-align: text-bottom;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+/* ===== 阶段标签 ===== */
+.stage-badge {
+  display: inline-block;
+  padding: 4px 12px;
+  border: 1px solid rgba(178, 34, 34, 0.3);
+  border-radius: 2px;
+  font-size: 0.75rem;
+  color: #b22222;
+  background: rgba(178, 34, 34, 0.05);
+  letter-spacing: 0.1em;
+}
+
+/* ===== 年份时间线 ===== */
+.year-display {
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.05em;
+}
